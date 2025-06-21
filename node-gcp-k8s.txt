@@ -3,6 +3,7 @@ gcloud config set compute/zone asia-southeast1-a
 
 - bikin 2 node cluster k8s
 gcloud container clusters create testing-gke --num-nodes 2
+gcloud container clusters create testing-gke-auto --enable-autoscaling --min-nodes=2 --max-nodes=3 --enable-autorepair
 
 - login k8s gke
 gcloud container clusters get-credentials testing-gke --zone asia-southeast1-a --project wired-method-458313-c5

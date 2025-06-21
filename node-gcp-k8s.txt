@@ -1,0 +1,30 @@
+- set region
+gcloud config set compute/zone asia-southeast1-a
+
+- bikin 2 node cluster k8s
+gcloud container clusters create testing-gke --num-nodes 2
+
+- login k8s gke
+gcloud container clusters get-credentials testing-gke --zone asia-southeast1-a --project wired-method-458313-c5
+gcloud components install kubectl
+
+- deploy 
+kubectl apply -f promo-deployment.yaml -f sales-deployment.yaml 
+
+- delete
+kubectl delete -f promo-deployment.yaml -f sales-deployment.yaml 
+
+- cek resource node
+kubectl top nodes
+
+- restart
+kubectl rollout restart deployment sales
+
+- get service
+kubectl get svc
+
+- install metric
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+- resource pod
+kubectl get pod

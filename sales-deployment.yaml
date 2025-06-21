@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sales
+  template:
+    metadata:
+      labels:
+        app: sales
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - sales
+              topologyKey: "kubernetes.io/hostname"
+      initContainers:
+      - name: wait-for-promo
+        image: curlimages/curl:7.85.0
+        command: ['sh', '-c', 'until curl -s http://promo:5001; do echo waiting for promo; sleep 2; done; echo promo is up']
+      containers:
+      - name: sales
+        image: python:3.9
+        command: ["python", "-m", "http.server", "5000"]
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "20Mi"
+          limits:
+            cpu: "70m"
+            memory: "50Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sales
+spec:
+  type: LoadBalancer
+  selector:
+    app: sales
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000

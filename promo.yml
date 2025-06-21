@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: promo
+spec:
+  selector:
+    app: promo
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: promo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: promo
+  template:
+    metadata:
+      labels:
+        app: promo
+    spec:
+      containers:
+        - name: promo
+          image: python:3.9
+          command: ["python", "-m", "http.server", "5000"]
+          ports:
+            - containerPort: 5000
